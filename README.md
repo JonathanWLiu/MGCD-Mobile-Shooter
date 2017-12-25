@@ -1,21 +1,21 @@
 # MGCD-Mobile-Shooter
 
-- Player Animation	Done
-- Player Control	Done
-- Player Enemy Damage	Done
-- Player Shoot		Done
-- Bullet		Done
-- Enemy Animation	Done
-- Enemy Movement	Done
-- Enemy Attack		Done
-- Enemy Die		Done
-- Enemy Spawnner
-- Player Ammo system
-- Player Reload
-- Player Melee
-- More Enemy type
-- Gameover UI		Done
-- Gameplay UI
-- Start Menu UI
-- Highscore
-- Mobile Input
+- [x] Player Animation	
+- [x] Player Control	
+- [x] Player Enemy Damage	
+- [x] Player Shoot		
+- [x] Bullet		
+- [x] Enemy Animation	
+- [x] Enemy Movement	
+- [x] Enemy Attack		
+- [x] Enemy Die		
+- [ ] Enemy Spawnner
+- [ ] Player Ammo system
+- [ ] Player Reload
+- [ ] Player Melee
+- [ ] More Enemy type
+- [x] Gameover UI		
+- [ ] Gameplay UI
+- [ ] Start Menu UI
+- [ ] Highscore
+- [ ] Mobile Input
