@@ -12,11 +12,9 @@ public class PlayerMovement : MonoBehaviour {
     private bool isRotateWithMouse = false;
     private bool isAllowMove = false;
     private Vector3 moveVector;
-
-    private Rigidbody2D rb;
+    
     // Use this for initialization
     void Awake () {
-        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -51,9 +49,9 @@ public class PlayerMovement : MonoBehaviour {
         }
     }
 
-    public void AllowControl()
+    public void AllowControl(bool b)
     {
-        isAllowMove = true;
-        isRotateWithMouse = true;
+        isAllowMove = b;
+        isRotateWithMouse = b;
     }
 }
