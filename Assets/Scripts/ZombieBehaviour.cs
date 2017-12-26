@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class ZombieBehaviour : MonoBehaviour {
+    [System.Serializable]
+    public class DropItem
+    {
+        public GameObject itemPrefab;
+        public float dropChance;
+    }
 
     [SerializeField]
     private float damage;
@@ -12,10 +18,12 @@ public class ZombieBehaviour : MonoBehaviour {
     private float maxHealth;
     [SerializeField]
     private float staggerDuration;
-
+    [SerializeField]
+    private float corpseSpanTime;
     [SerializeField]
     private float attackCooldown;
-
+    [SerializeField]
+    private DropItem[] dropitem;
     private bool _attackCooldown = false;
 
     private float health;
@@ -23,22 +31,35 @@ public class ZombieBehaviour : MonoBehaviour {
     private bool isDead = false;
 
     private GameObject player;
-    private Rigidbody2D rb;
     private Animator anim;
+    private ZombieSound zombieSound;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("trigger");
         if (other.CompareTag("Bullet"))
         {
             if (health > 0)
             {
                 health -= other.GetComponent<BulletBehaviour>().getDamage();
+                Destroy(other.gameObject);
+                zombieSound.PlaySoundHit();
                 if (health <= 0)
                 {
                     isDead = true;
                     isChasing = false;
                     anim.SetBool("isDead", true);
+                    zombieSound.StartZombieSound();
+                    for (int i = 0; i < dropitem.Length; i++)
+                    {
+                        float luckyNumber = Random.value;
+                        if (luckyNumber <= dropitem[i].dropChance/100)
+                        {
+                            Instantiate(dropitem[i].itemPrefab, transform.position, Quaternion.identity);
+                        }
+                        //Debug.Log(luckyNumber);
+                    }
+                    GetComponent<CapsuleCollider2D>().enabled = false;
+                    Destroy(gameObject, corpseSpanTime);
                 }
                 else
                 {
@@ -55,6 +76,7 @@ public class ZombieBehaviour : MonoBehaviour {
             if (!_attackCooldown)
             {
                 StartCoroutine(AttackCooldown());
+                zombieSound.PlaySoundAttack();
                 PlayerController pc = collision.gameObject.GetComponent<PlayerController>();
                 pc.AttackPlayer(damage);
                 if (pc.getHealth() <= 0)
@@ -67,11 +89,12 @@ public class ZombieBehaviour : MonoBehaviour {
 
     // Use this for initialization
     void Awake () {
+        zombieSound = GetComponent<ZombieSound>();
         player = GameObject.FindGameObjectWithTag("Player");
-        rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         health = maxHealth;
         isChasing = true;
+        zombieSound.StartZombieSound();
 	}
 	
 	// Update is called once per frame
@@ -87,7 +110,7 @@ public class ZombieBehaviour : MonoBehaviour {
 
     private void FixedUpdate()
     {
-        if (isChasing)
+        if (isChasing && !isDead)
         {
             transform.position += transform.right * speed;
         }

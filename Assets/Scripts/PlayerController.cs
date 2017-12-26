@@ -11,8 +11,14 @@ public class PlayerController : MonoBehaviour {
 
     [SerializeField]
     private float maxHealth;
+    [SerializeField]
+    private int startingAmmo;
 
     private float health;
+    private int ammo = 0;
+    private int loadedAmmo = 0;
+
+    private int magazineCapacity = 7;
 
     private float fireCooldown = 0.11f;
     private float reloadCooldown = 1.25f;
@@ -24,38 +30,54 @@ public class PlayerController : MonoBehaviour {
 
     private PlayerMovement playerMovement;
     private PlayerAnimController playerAnimController;
+    private PlayerSound playerSound;
     private GameController gc;
 
 
-	// Use this for initialization
-	void Awake () {
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("HandgunAmmo"))
+        {
+            ammo += 30;
+            Destroy(collision.gameObject);
+            UpdateUI();
+        }
+    }
+
+    // Use this for initialization
+    void Awake () {
         playerMovement = GetComponent<PlayerMovement>();
         playerAnimController = GetComponent<PlayerAnimController>();
+        playerSound = GetComponent<PlayerSound>();
         gc = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 
         health = maxHealth;
-        playerMovement.AllowControl();
+        ammo = startingAmmo;
+        playerMovement.AllowControl(true);
+        gc.SetPlayerHealthMax(maxHealth);
+        UpdateUI();
+        GunReload();
 	}
 	
 	// Update is called once per frame
 	void Update () {
         MovementControl();
         bool isDoNothing = !_fireCooldown && !_reloadCooldown && !_meleeCooldown;
+        if (!gc.IsGameover())
+        {
+
+        }
         if (Input.GetButton("Fire1") && isDoNothing)
         {
-            StartCoroutine(FireCooldown());
             GunFire();
-            playerAnimController.TriggerShoot();
         }
         if (Input.GetButton("Reload") && isDoNothing)
         {
-            StartCoroutine(ReloadCooldown());
-            playerAnimController.TriggerReload();
+            GunReload();
         }
         if (Input.GetButton("Fire2") && isDoNothing)
         {
-            StartCoroutine(MeleeCooldown());
-            playerAnimController.TriggerMelee();
+            Melee();
         }
     }
 
@@ -116,10 +138,37 @@ public class PlayerController : MonoBehaviour {
 
     void GunFire()
     {
-        BulletBehaviour bul = Instantiate(bulletPrefab, pistolEndPoint.transform.position, transform.rotation).GetComponent<BulletBehaviour>();
-        bul.setDamage(1);
-    }
+        StartCoroutine(FireCooldown());
 
+        if (loadedAmmo > 0)
+        {
+            playerSound.PlayAudioShoot();
+            BulletBehaviour bul = Instantiate(bulletPrefab, pistolEndPoint.transform.position, transform.rotation).GetComponent<BulletBehaviour>();
+            bul.setDamage(1);
+            playerAnimController.TriggerShoot();
+            loadedAmmo--;
+            UpdateUI();
+        }
+        else
+        {
+            playerSound.PlayAudioEmpty();
+        }
+    }
+    void GunReload()
+    {
+        if (ammo > 0)
+        {
+            StartCoroutine(ReloadCooldown());
+            playerSound.PlayAudioReload();
+            playerAnimController.TriggerReload();
+        }
+        
+    }
+    void Melee()
+    {
+        StartCoroutine(MeleeCooldown());
+        playerAnimController.TriggerMelee();
+    }
     IEnumerator FireCooldown()
     {
         _fireCooldown = true;
@@ -130,6 +179,17 @@ public class PlayerController : MonoBehaviour {
     {
         _reloadCooldown = true;
         yield return new WaitForSeconds(reloadCooldown);
+        if (ammo >= 7)
+        {
+            ammo -= magazineCapacity - loadedAmmo;
+            loadedAmmo = 7;
+        }
+        else
+        {
+            loadedAmmo = ammo;
+            ammo = 0;
+        }
+        UpdateUI();
         _reloadCooldown = false;
     }
     IEnumerator MeleeCooldown()
@@ -146,9 +206,16 @@ public class PlayerController : MonoBehaviour {
             if (health > 0)
             {
                 health -= dmg;
+                UpdateUI();
                 if (health <= 0)
                 {
+                    playerSound.PlayAudioDie();
+                    playerMovement.AllowControl(false);
                     gc.Gameover();
+                }
+                else
+                {
+                    playerSound.PlayAudioHurt();
                 }
             }
         }
@@ -156,5 +223,10 @@ public class PlayerController : MonoBehaviour {
     public float getHealth()
     {
         return health;
+    }
+    
+    void UpdateUI()
+    {
+        gc.UpdateUI(health, loadedAmmo, ammo);
     }
 }
