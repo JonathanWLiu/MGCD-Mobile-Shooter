@@ -4,7 +4,8 @@
 - v0.1 [Google Drive](https://drive.google.com/file/d/16nN6iz-NUwUWjVxi5OrcAxKg-KxgUQJK/view?usp=sharing)
 
 ## How to Play
-Control :
+Control | Key
+------- | ---
 Movement | WASD / Arrow Key
 Shoot | Left Mouse
 Melee | Right Mouse
