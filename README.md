@@ -1,7 +1,7 @@
 # MGCD-Mobile-Shooter
 
 ### Download Build
-- v0.1 [Google Drive] (https://drive.google.com/file/d/16nN6iz-NUwUWjVxi5OrcAxKg-KxgUQJK/view?usp=sharing)
+- v0.1 [Google Drive](https://drive.google.com/file/d/16nN6iz-NUwUWjVxi5OrcAxKg-KxgUQJK/view?usp=sharing)
 
 ## How to Play
 Control :
