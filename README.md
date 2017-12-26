@@ -1,5 +1,35 @@
 # MGCD-Mobile-Shooter
 
+### Download Build
+- v0.1 [Google Drive] (https://drive.google.com/file/d/16nN6iz-NUwUWjVxi5OrcAxKg-KxgUQJK/view?usp=sharing)
+
+## How to Play
+Control :
+Movement | WASD / Arrow Key
+Shoot | Left Mouse
+Melee | Right Mouse
+Reload | R
+Aim | Mouse
+
+## To Do
+
+- [ ] More Wave Stages
+- [ ] Increasing Stage
+- [ ] Player Melee
+- [ ] More Enemy type
+- [ ] Highscore
+- [ ] Mobile Input
+
+## History
+**v0.1**
+- [x] Gameplay UI
+- [x] Start Menu UI
+- [x] Enemy Spawnner
+- [x] Player Ammo system
+- [x] Player Reload
+- [x] Sound FX & Music
+
+**v0**
 - [x] Player Animation	
 - [x] Player Control	
 - [x] Player Enemy Damage	
@@ -9,13 +39,4 @@
 - [x] Enemy Movement	
 - [x] Enemy Attack		
 - [x] Enemy Die		
-- [ ] Enemy Spawnner
-- [ ] Player Ammo system
-- [ ] Player Reload
-- [ ] Player Melee
-- [ ] More Enemy type
 - [x] Gameover UI		
-- [ ] Gameplay UI
-- [ ] Start Menu UI
-- [ ] Highscore
-- [ ] Mobile Input
