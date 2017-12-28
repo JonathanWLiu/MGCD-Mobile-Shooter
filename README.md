@@ -15,11 +15,11 @@ Aim | Mouse
 ## To Do
 
 - [ ] More Wave Stages
-- [ ] Increasing Stage
+- [x] Increasing Stage
 - [ ] Player Melee
 - [ ] More Enemy type
 - [ ] Highscore
-- [ ] Mobile Input
+- [ ] Mobile Input *on progress*
 
 ## History
 **v0.1**

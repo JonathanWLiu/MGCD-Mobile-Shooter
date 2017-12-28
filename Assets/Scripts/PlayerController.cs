@@ -5,6 +5,11 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour {
 
     [SerializeField]
+    private bool useMobileInput;
+    [SerializeField]
+    private VirtualJoystickHandler mobileLeftJoystick;
+
+    [SerializeField]
     private Transform pistolEndPoint;
     [SerializeField]
     private GameObject bulletPrefab;
@@ -84,6 +89,10 @@ public class PlayerController : MonoBehaviour {
     void MovementControl()
     {
         Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
+        if (useMobileInput)
+        {
+            movementInput = mobileLeftJoystick.InputDirection;
+        }
         if (movementInput.x != 0 || movementInput.y != 0)
         {
             if (movementInput.x != 0 && movementInput.y != 0)
@@ -228,5 +237,11 @@ public class PlayerController : MonoBehaviour {
     void UpdateUI()
     {
         gc.UpdateUI(health, loadedAmmo, ammo);
+    }
+
+    public void InitMobileInput(VirtualJoystickHandler vhj)
+    {
+        useMobileInput = true;
+        mobileLeftJoystick = vhj;
     }
 }

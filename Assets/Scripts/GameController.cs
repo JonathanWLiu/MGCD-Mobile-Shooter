@@ -20,6 +20,10 @@ public class GameController : MonoBehaviour {
     private Text uiTimer;
     [SerializeField]
     private CameraBehaviour camBehaviour;
+    [SerializeField]
+    private bool useMobileInput;
+    [SerializeField]
+    private VirtualJoystickHandler mobileLeftJoystick;
 
     [SerializeField]
     private GameObject playerPrefab;
@@ -70,6 +74,11 @@ public class GameController : MonoBehaviour {
 
         zombieSpawner.StartSpawning();
         camBehaviour.SetTarget(player.transform);
+
+        if (useMobileInput)
+        {
+            playerController.InitMobileInput(mobileLeftJoystick);
+        }
     }
 
     public void Gameover()

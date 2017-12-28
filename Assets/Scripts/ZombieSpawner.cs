@@ -7,6 +7,7 @@ public class ZombieSpawner : MonoBehaviour {
     public class Stages{
         public float spawnCooldown;
         public float spawnNumber;
+        public float waveLength;
     }
 
     [SerializeField]
@@ -23,10 +24,6 @@ public class ZombieSpawner : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        for (int i = 0; i < stages.Length; i++)
-        {
-            //stages[i] = new Stages();
-        }
 	}
 	
 	// Update is called once per frame
@@ -82,11 +79,25 @@ public class ZombieSpawner : MonoBehaviour {
         yield return new WaitForSeconds(stages[curStage].spawnCooldown);
         zombieSpawnCoroutine = StartCoroutine(SpawnZombies());
     }
+
+    IEnumerator IncreaseStage()
+    {
+        yield return new WaitForSeconds(stages[curStage].waveLength);
+        curStage++;
+        if (stages.Length - 1 > curStage)
+        {
+            StartCoroutine(IncreaseStage());
+        }
+    }
     
     public void StartSpawning()
     {
         zombieSpawnCoroutine = StartCoroutine(SpawnZombies());
-
+        curStage = 0;
+        if (stages.Length - 1 > curStage)
+        {
+            StartCoroutine(IncreaseStage());
+        }
     }
     public void StopSpawning()
     {
