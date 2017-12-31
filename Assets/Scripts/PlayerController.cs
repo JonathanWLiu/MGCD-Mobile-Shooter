@@ -8,6 +8,8 @@ public class PlayerController : MonoBehaviour {
     private bool useMobileInput;
     [SerializeField]
     private VirtualJoystickHandler mobileLeftJoystick;
+    [SerializeField]
+    private VirtualJoystickHandler mobileRightJoystick;
 
     [SerializeField]
     private Transform pistolEndPoint;
@@ -32,6 +34,7 @@ public class PlayerController : MonoBehaviour {
     private bool _fireCooldown = false;
     private bool _reloadCooldown = false;
     private bool _meleeCooldown = false;
+    private bool isDoNothing = false;
 
     private PlayerMovement playerMovement;
     private PlayerAnimController playerAnimController;
@@ -66,32 +69,38 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        MovementControl();
-        bool isDoNothing = !_fireCooldown && !_reloadCooldown && !_meleeCooldown;
-        if (!gc.IsGameover())
+        //Rotation Handler
+        if (useMobileInput)
         {
+            playerMovement.Rotate(Mathf.Atan2(mobileRightJoystick.InputDirection.y, mobileRightJoystick.InputDirection.x) * Mathf.Rad2Deg);
+        }
+        else
+        {
+            Vector3 mouseIn = Input.mousePosition;
+            Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(mouseIn.x, mouseIn.y, 10));
+            Vector3 difference = mousePos - transform.position;
+            playerMovement.Rotate(Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg);
+        }
+        //Call Movement Handler
+        MovementControl();
+
+        isDoNothing = !_fireCooldown && !_reloadCooldown && !_meleeCooldown;
+        if (!useMobileInput)
+        {
+            InputHandler();
 
         }
-        if (Input.GetButton("Fire1") && isDoNothing)
-        {
-            GunFire();
-        }
-        if (Input.GetButton("Reload") && isDoNothing)
-        {
-            GunReload();
-        }
-        if (Input.GetButton("Fire2") && isDoNothing)
-        {
-            Melee();
-        }
+
     }
 
-    void MovementControl()
+    void MovementControl()  //Movement Handler
     {
+        bool isRun = false;
         Vector3 movementInput = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"), 0);
         if (useMobileInput)
         {
             movementInput = mobileLeftJoystick.InputDirection;
+            isRun = mobileLeftJoystick.isDoubleTap;
         }
         if (movementInput.x != 0 || movementInput.y != 0)
         {
@@ -100,7 +109,7 @@ public class PlayerController : MonoBehaviour {
                 movementInput /= 1.45f;
             }
             //Debug.Log(movementInput.magnitude);
-            if (Input.GetButton("Run"))
+            if ((Input.GetButton("Run") || isRun) )
             {
                 playerMovement.Move(movementInput, true);
 
@@ -141,6 +150,57 @@ public class PlayerController : MonoBehaviour {
             if (playerAnimController.isBodyMove())
             {
                 playerAnimController.setBodyMove(false);
+            }
+        }
+    }
+
+    void InputHandler()
+    {
+        if (!gc.IsGameover())
+        {
+            if (Input.GetButton("Fire1") && isDoNothing && !useMobileInput)
+            {
+                GunFire();
+            }
+            if (Input.GetButton("Reload") && isDoNothing)
+            {
+                GunReload();
+            }
+            if (Input.GetButton("Fire2") && isDoNothing)
+            {
+                Melee();
+            }
+        }
+    }
+    public void InputHandler(int n)
+    {
+        if (!gc.IsGameover())
+        {
+            switch (n)
+            {
+                case 0:
+                    if (isDoNothing)
+                    {
+                        GunFire();
+
+                    }
+                    break;
+                case 1:
+                    if (isDoNothing)
+                    {
+                        GunReload();
+
+                    }
+                    break;
+                case 2:
+                    if (isDoNothing)
+                    {
+                        Melee();
+
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -239,9 +299,10 @@ public class PlayerController : MonoBehaviour {
         gc.UpdateUI(health, loadedAmmo, ammo);
     }
 
-    public void InitMobileInput(VirtualJoystickHandler vhj)
+    public void InitMobileInput(VirtualJoystickHandler left,VirtualJoystickHandler right)
     {
         useMobileInput = true;
-        mobileLeftJoystick = vhj;
+        mobileLeftJoystick = left;
+        mobileRightJoystick = right;
     }
 }

@@ -1,14 +1,24 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections;
 
 public class VirtualJoystickHandler : MonoBehaviour, IDragHandler, IPointerUpHandler, IPointerDownHandler
 {
+    [SerializeField]
+    private bool useDoubleTapFunction;
+    [SerializeField]
+    private float doubleTapTimeLimit;
+    [SerializeField]
+    private bool resetOnRelease;
 
     private Image jsContainer;
     private Image joystick;
 
     public Vector3 InputDirection;
+
+    public bool isDoubleTap = false;
+    private bool isDoubleTapWait = false;
 
     void Start()
     {
@@ -37,7 +47,6 @@ public class VirtualJoystickHandler : MonoBehaviour, IDragHandler, IPointerUpHan
 
         InputDirection = new Vector3(x, y, 0);
         InputDirection = (InputDirection.magnitude > 1) ? InputDirection.normalized : InputDirection;
-
         //to define the area in which joystick can move around
         joystick.rectTransform.anchoredPosition = new Vector3(InputDirection.x * (jsContainer.rectTransform.sizeDelta.x / 3)
                                                                , InputDirection.y * (jsContainer.rectTransform.sizeDelta.y) / 3);
@@ -46,14 +55,40 @@ public class VirtualJoystickHandler : MonoBehaviour, IDragHandler, IPointerUpHan
 
     public void OnPointerDown(PointerEventData ped)
     {
-
+        if (useDoubleTapFunction)
+        {
+            if (isDoubleTapWait)
+            {
+                isDoubleTap = true;
+                StopAllCoroutines();
+                isDoubleTapWait = false;
+            }
+            else
+            {
+                StartCoroutine(DoubleTapWait());
+            }
+        }
         OnDrag(ped);
     }
 
     public void OnPointerUp(PointerEventData ped)
     {
+        if (resetOnRelease)
+        {
+            InputDirection = Vector3.zero;
 
-        InputDirection = Vector3.zero;
+        }
         joystick.rectTransform.anchoredPosition = Vector3.zero;
+        if (isDoubleTap)
+        {
+            isDoubleTap = false;
+        }
+    }
+
+    IEnumerator DoubleTapWait()
+    {
+        isDoubleTapWait = true;
+        yield return new WaitForSeconds(doubleTapTimeLimit);
+        isDoubleTapWait = false;
     }
 }

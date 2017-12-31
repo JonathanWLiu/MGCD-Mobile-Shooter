@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour {
     private bool isRotateWithMouse = false;
     private bool isAllowMove = false;
     private Vector3 moveVector;
+    private float rotationZ;
     
     // Use this for initialization
     void Awake () {
@@ -21,10 +22,6 @@ public class PlayerMovement : MonoBehaviour {
     void Update () {
         if (isRotateWithMouse)
         {
-            Vector3 mouseIn = Input.mousePosition;
-            Vector3 mousePos = Camera.main.ScreenToWorldPoint(new Vector3(mouseIn.x, mouseIn.y, 10));
-            Vector3 difference = mousePos - transform.position;
-            float rotationZ = Mathf.Atan2(difference.y, difference.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0.0f, 0.0f, rotationZ);
         }
 
@@ -36,6 +33,11 @@ public class PlayerMovement : MonoBehaviour {
         {
             transform.position += moveVector;
         }
+    }
+
+    public void Rotate(float f)
+    {
+        rotationZ = f;
     }
 
     public void Move(Vector3 v) {

@@ -24,6 +24,10 @@ public class GameController : MonoBehaviour {
     private bool useMobileInput;
     [SerializeField]
     private VirtualJoystickHandler mobileLeftJoystick;
+    [SerializeField]
+    private VirtualJoystickHandler mobileRightJoystick;
+    [SerializeField]
+    private GameObject mobileUI;
 
     [SerializeField]
     private GameObject playerPrefab;
@@ -50,6 +54,9 @@ public class GameController : MonoBehaviour {
         {
             camBehaviour = Camera.main.GetComponent<CameraBehaviour>();
         }
+        uiGameScreenPanel.SetActive(false);
+        uiGameoverPanel.SetActive(false);
+        uiStartScreenPanel.SetActive(true);
     }
 	
 	// Update is called once per frame
@@ -77,13 +84,25 @@ public class GameController : MonoBehaviour {
 
         if (useMobileInput)
         {
-            playerController.InitMobileInput(mobileLeftJoystick);
+            if (!mobileUI.activeSelf)
+            {
+                mobileUI.SetActive(true);
+            }
+            playerController.InitMobileInput(mobileLeftJoystick,mobileRightJoystick);
+        }
+        else
+        {
+            if (mobileUI.activeSelf)
+            {
+                mobileUI.SetActive(false);
+            }
         }
     }
 
     public void Gameover()
     {
         gameover = true;
+        uiGameScreenPanel.SetActive(false);
         uiGameoverPanel.SetActive(true);
         zombieSpawner.StopSpawning();
         gameSound.PlayAudioGameover();
@@ -132,6 +151,18 @@ public class GameController : MonoBehaviour {
         else
         {
             uiTimer.text = (int)timer+"" ;
+        }
+    }
+
+    public void MobileInputHandler(int n)
+    {
+        if (playerController)
+        {
+            playerController.InputHandler(n);
+        }
+        else
+        {
+            Debug.Log("Null refference to playerController for Mobile Input");
         }
     }
 }
